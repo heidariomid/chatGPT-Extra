@@ -9,6 +9,7 @@ const chats = withApiAuthRequired(async (req, res) => {
 		return res.status(401).json({message: 'Unauthorized'});
 	}
 	const client = await clientPromise;
+
 	const db = client.db('chatGPT');
 	const userProfile = await db.collection('users').findOne({authId: user.sub});
 	if (!userProfile?.tokens) {
