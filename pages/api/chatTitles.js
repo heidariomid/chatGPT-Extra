@@ -14,6 +14,7 @@ const chatTitles = withApiAuthRequired(async (req, res) => {
 			res.status(403).json({message: 'Unauthorized'});
 			return;
 		}
+
 		const chats = await db.collection('chats').find({userId: userProfile._id}).toArray();
 		res.status(200).json(chats);
 	} catch (error) {
