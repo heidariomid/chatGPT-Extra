@@ -1,19 +1,25 @@
 import Link from 'next/link';
 import axios from 'axios';
-import {BiSend} from 'react-icons/bi';
+import {BiLoader, BiSend} from 'react-icons/bi';
 import {Layout} from '../components/Layout';
 import {useUser} from '@auth0/nextjs-auth0/client';
+import {useRef, useState} from 'react';
 
 const NewChat = () => {
 	const {user} = useUser();
+	const inputRef = useRef(null);
+	const [isLoading, setIsLoading] = useState(false);
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setIsLoading(true);
 		const content = e.target.content.value;
-
 		try {
 			await axios.post('/api/chats', {content});
+			inputRef.current.value = '';
 		} catch (error) {
 			throw new Error(error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -39,11 +45,12 @@ const NewChat = () => {
 									<input
 										id='content'
 										type='text'
+										ref={inputRef}
 										className='flex flex-1  rounded-full border border-gray-400 py-2 px-4 mr-2 focus:outline-none focus:border-violet-500'
 										placeholder='Type a message...'
 									/>
-									<button type='submit' className='rounded-full bg-violet-500 text-white p-2 hover:bg-violet-600 focus:outline-none'>
-										<BiSend />
+									<button disabled={isLoading} type='submit' className='rounded-full bg-violet-500 text-white p-2 hover:bg-violet-600 focus:outline-none'>
+										{isLoading ? <BiLoader /> : <BiSend />}
 									</button>
 								</form>
 							</div>

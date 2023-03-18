@@ -6,12 +6,15 @@ const chatTitles = withApiAuthRequired(async (req, res) => {
 	if (!user) {
 		return res.status(401).json({message: 'Unauthorized'});
 	}
+
 	try {
 		const client = await clientPromise;
 		const db = client.db('chatGPT');
 		const userProfile = await db.collection('users').findOne({authId: user.sub});
+
 		if (!userProfile?.tokens) {
-			res.status(403).json({message: 'Unauthorized'});
+			// send a message and say you do not have enought token
+			res.status(200).json({error: 'You do not have enough tokens to chat.'});
 			return;
 		}
 
