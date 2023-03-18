@@ -3,6 +3,7 @@ import clientPromise from '../../lib/mongodb';
 
 const addToken = async (req, res) => {
 	const {user} = await getSession(req, res);
+	console.log(user);
 	if (!user) {
 		return res.status(401).json({message: 'Unauthorized'});
 	}

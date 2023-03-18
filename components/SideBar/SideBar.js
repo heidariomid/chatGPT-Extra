@@ -26,7 +26,7 @@ export const Sidebar = () => {
 	}, [chats?.length]);
 	if (errMessage)
 		return (
-			<div className='bg-gray-200 h-screen w-full flex flex-col overflow-hidden flex-shrink-0'>
+			<div className='bg-violet-200 h-full w-full flex flex-col overflow-hidden flex-shrink-0'>
 				<div className='flex-grow flex flex-col gap-4 items-center justify-center'>
 					<span className='text-lg text-red-500'>Error Occured</span>
 					<span className='text-lg text-gray-700'>{errMessage}</span>
@@ -35,7 +35,7 @@ export const Sidebar = () => {
 			</div>
 		);
 	return (
-		<div className='bg-gray-200 h-screen w-full flex flex-col overflow-hidden flex-shrink-0'>
+		<div className='bg-violet-100 border-r-2 border-r-gray-200 h-full w-full flex flex-col overflow-hidden flex-shrink-0'>
 			{isLoading ? (
 				<div className='flex-grow flex flex-col gap-4 items-center justify-center'>
 					<span className='text-lg text-gray-700'>Loading...</span>

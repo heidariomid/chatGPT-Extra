@@ -3,7 +3,7 @@ import {Configuration, OpenAIApi} from 'openai';
 import clientPromise from '../../lib/mongodb';
 
 const chats = withApiAuthRequired(async (req, res) => {
-	const {content} = req.body;
+	const {content, authId} = req.body;
 	const {user} = await getSession(req, res);
 	if (!user) {
 		return res.status(401).json({message: 'Unauthorized'});
@@ -11,7 +11,7 @@ const chats = withApiAuthRequired(async (req, res) => {
 	const client = await clientPromise;
 
 	const db = client.db('chatGPT');
-	const userProfile = await db.collection('users').findOne({authId: user.sub});
+	const userProfile = await db.collection('users').findOne({authId});
 	if (!userProfile?.tokens) {
 		res.status(403).json({message: 'Unauthorized'});
 		return;
@@ -34,10 +34,14 @@ const chats = withApiAuthRequired(async (req, res) => {
 		const title = titleMatch ? titleMatch[1] : '';
 		const textMatch = inputString.match(/Result:\s*(.*)$/);
 		const text = textMatch ? textMatch[1] : '';
+		const authIdExtract = authId.split('|');
+		const userAuthId = authIdExtract[1];
 		const responseObj = {
 			userId: userProfile._id,
 			title,
 			text,
+			content,
+			authId: userAuthId,
 			createdAt: new Date(),
 		};
 		await db.collection('users').updateOne({authId: user.sub}, {$inc: {tokens: -1}});

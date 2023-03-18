@@ -14,7 +14,7 @@ const NewChat = () => {
 		setIsLoading(true);
 		const content = e.target.content.value;
 		try {
-			await axios.post('/api/chats', {content});
+			await axios.post('/api/chats', {content, authId: user.sub});
 			inputRef.current.value = '';
 		} catch (error) {
 			throw new Error(error);
@@ -24,12 +24,12 @@ const NewChat = () => {
 	};
 
 	return (
-		<div className='flex flex-col justify-center items-center '>
+		<div className='flex flex-col justify-center items-center w-full  '>
 			<div className='text-center mx-4 shadow-xl w-1/2  p-24 rounded-3xl bg-indigo-100'>
 				<h1 className='text-4xl font-bold mb-8 text-indigo-900 pb-6'>
 					ChatGPT<span className='bg-violet-600 text-white px-3 py-1 rounded-xl ml-2 tracking-wider font-extrabold'> Extra</span>
 				</h1>
-				<div className='flex flex-row justify-center space-x-4'>
+				<div className='flex flex-row  justify-center space-x-4'>
 					{!user && (
 						<Link href='/api/auth/login'>
 							<span className='  text-indigo-900 font-bold py-2 px-4  '>Please</span>
@@ -39,7 +39,7 @@ const NewChat = () => {
 					)}
 
 					{user && (
-						<div className='w-full'>
+						<div className='w-full '>
 							<div>
 								<form onSubmit={handleSubmit} className='flex items-center p-4 '>
 									<input

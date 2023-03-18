@@ -25,7 +25,7 @@ const Header = () => {
 	if (isLoading) return <div>Loading...</div>;
 	return (
 		<>
-			<header className='bg-gray-900 text-white py-4'>
+			<header className='bg-violet-300 text-white py-4'>
 				<div className='container mx-auto px-4'>
 					<nav className='flex items-center justify-between'>
 						<div className='flex flex-row items-center gap-2 text-xl font-bold'>
@@ -33,24 +33,20 @@ const Header = () => {
 							<Link href='/'>ChatGPT Extra</Link>
 						</div>
 						{user ? (
-							<ul className='flex items-center'>
+							<ul className='flex items-center gap-x-4'>
 								<li>
-									<Link href='/' className='block px-4 py-2 hover:text-gray-300'>
+									<Link href='/' className='block px-4 py-2  bg-violet-500 hover:text-gray-300'>
 										New Chat
 									</Link>
 								</li>
 								<li>
-									<Link href='/token' className='block px-4 py-2 hover:text-gray-300'>
+									<Link href='/token' className='block px-4 py-2 bg-violet-500  hover:text-gray-300'>
 										{/* add remaining token with icon */}
-										<div className='flex justify-center items-center gap-2'>
-											<div>
-												Token :<span className='text-red-500'> {userProfile?.tokens}</span>
-											</div>
-										</div>
+										Token :<span> {userProfile?.tokens}</span>
 									</Link>
 								</li>
 								<li>
-									<Link href='/api/auth/logout' className='block px-2 py-1 hover:text-gray-300 bg-gray-500'>
+									<Link href='/api/auth/logout' className='block px-4 py-2  hover:text-gray-300 bg-violet-600'>
 										Logout
 									</Link>
 								</li>

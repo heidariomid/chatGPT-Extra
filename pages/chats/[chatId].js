@@ -1,18 +1,31 @@
+import {useUser} from '@auth0/nextjs-auth0/client';
 import axios from 'axios';
 import {useRouter} from 'next/router';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
+import {BiLoader, BiSend} from 'react-icons/bi';
 import {Layout} from '../../components/Layout';
+import ChatMessage from './ChatMessage';
 
 const Chat = () => {
 	const router = useRouter();
 	const {chatId} = router.query;
-	const [chat, setChat] = useState([]);
+	const [chat, setChat] = useState({});
+	const {user} = useUser();
+	const inputRef = useRef(null);
+	// extract id from user auth0|640e38965c5d4c4a5fb1fd57
+	const extractcurrentUserAuthId = user?.sub?.split('|');
+	const currentUserAuthId = extractcurrentUserAuthId && extractcurrentUserAuthId[1];
 	const [errMessage, setErrMessage] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const handleSendMessage = (e) => {
+		e.preventDefault();
+		// implement sending new message functionality here
+	};
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const res = await axios.post('/api/chat', {chatId});
+				console.log(res.data);
 				setChat(res.data);
 				setIsLoading(false);
 			} catch (err) {
@@ -25,7 +38,7 @@ const Chat = () => {
 	}, [chatId]);
 	// if (errMessage) return <div>{errMessage}</div>;
 	return (
-		<div className=' h-screen w-full flex flex-col overflow-hidden flex-shrink-0'>
+		<div className=' w-full flex flex-col overflow-hidden flex-shrink-0'>
 			{isLoading ? (
 				<div className='flex-grow flex flex-col gap-4 items-center justify-center'>
 					<span className='text-lg text-gray-700'>Loading...</span>
@@ -35,13 +48,40 @@ const Chat = () => {
 					</svg>
 				</div>
 			) : (
-				<div className='p-4 flex-1'>
-					<h1 className='text-2xl font-bold text-gray-700 border-b-2 border-gray-400 pb-2'>{chat?.title}</h1>
-					<ul key={chat?._id} className='divide-y divide-gray-300'>
-						<li className='py-4'>
-							<h2 className='text-gray-600  hover:text-violet-700'>{chat?.text}</h2>
-						</li>
-					</ul>
+				<div className='flex flex-col h-full max-h-full'>
+					<div className='overflow-y-auto flex-grow px-4 pt-4 pb-20'>
+						<ChatMessage key={chat?.id} sender={chat?.sender} text={chat?.text} isSentByMe={chat?.authId === currentUserAuthId} content={chat?.content} />
+					</div>
+					{/* <div className='absolute bottom-0 left-0 w-full'>
+						<form onSubmit={handleSendMessage} className='flex items-center p-4'>
+							<input
+								type='text'
+								className='flex-grow rounded-full border border-gray-400 py-2 px-4 mr-2 focus:outline-none focus:border-blue-500'
+								placeholder='Type a message....'
+							/>
+							<button type='submit' className='rounded-full bg-blue-500 text-white p-2 hover:bg-blue-600 focus:outline-none'>
+								<svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
+								</svg>
+							</button>
+						</form>
+					</div> */}
+					<div className='w-full'>
+						<div>
+							<form onSubmit={handleSendMessage} className='flex items-center p-4 '>
+								<input
+									id='content'
+									type='text'
+									ref={inputRef}
+									className='flex flex-1  rounded-full border border-gray-400 py-2 px-4 mr-2 focus:outline-none focus:border-violet-500'
+									placeholder='Type a message...'
+								/>
+								<button disabled={isLoading} type='submit' className='rounded-full bg-violet-500 text-white p-2 hover:bg-violet-600 focus:outline-none'>
+									{isLoading ? <BiLoader /> : <BiSend />}
+								</button>
+							</form>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>
