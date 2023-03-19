@@ -17,15 +17,25 @@ const Chat = () => {
 	const currentUserAuthId = extractcurrentUserAuthId && extractcurrentUserAuthId[1];
 	const [errMessage, setErrMessage] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
-	const handleSendMessage = (e) => {
+	const handleSendMessage = async (e) => {
 		e.preventDefault();
-		// implement sending new message functionality here
+		const content = e.target.content.value;
+		// setIsLoading(true);
+		try {
+			const res = await axios.post('/api/chatId', {userMsg: content, authId: user.sub, chatId});
+			setChat(res.data);
+			inputRef.current.value = '';
+		} catch (error) {
+			throw new Error(error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const res = await axios.post('/api/chat', {chatId});
-				console.log(res.data);
+
 				setChat(res.data);
 				setIsLoading(false);
 			} catch (err) {
@@ -50,25 +60,12 @@ const Chat = () => {
 			) : (
 				<div className='flex flex-col h-full max-h-full'>
 					<div className='overflow-y-auto flex-grow px-4 pt-4 pb-20'>
-						<ChatMessage key={chat?.id} sender={chat?.sender} text={chat?.text} isSentByMe={chat?.authId === currentUserAuthId} content={chat?.content} />
+						<ChatMessage key={chat?.id} userMessages={chat?.userMessages} systemMessages={chat?.systemMessages} />
 					</div>
-					{/* <div className='absolute bottom-0 left-0 w-full'>
-						<form onSubmit={handleSendMessage} className='flex items-center p-4'>
-							<input
-								type='text'
-								className='flex-grow rounded-full border border-gray-400 py-2 px-4 mr-2 focus:outline-none focus:border-blue-500'
-								placeholder='Type a message....'
-							/>
-							<button type='submit' className='rounded-full bg-blue-500 text-white p-2 hover:bg-blue-600 focus:outline-none'>
-								<svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
-								</svg>
-							</button>
-						</form>
-					</div> */}
+
 					<div className='w-full'>
 						<div>
-							<form onSubmit={handleSendMessage} className='flex items-center p-4 '>
+							<form onSubmit={handleSendMessage} className='flex items-center p-4 w-full'>
 								<input
 									id='content'
 									type='text'

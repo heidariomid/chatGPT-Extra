@@ -4,7 +4,7 @@ import Header from './Header';
 
 export const Layout = ({children}) => {
 	return (
-		<div className='overflow-auto max-h-full h-full '>
+		<div className='max-h-full overflow-auto '>
 			{/* Head section */}
 			<Head>
 				<title>chatGPT Extra</title>
@@ -13,7 +13,7 @@ export const Layout = ({children}) => {
 			{/* Header section */}
 			<Header />
 			{/* Main content section */}
-			<main className='grid grid-cols-[300px_1fr] '>
+			<main className='grid grid-cols-[300px_1fr] max-h-screen overflow-y-auto '>
 				{/* Left sidebar */}
 				<Sidebar />
 				{children}

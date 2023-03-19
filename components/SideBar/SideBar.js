@@ -35,15 +35,17 @@ export const Sidebar = () => {
 			</div>
 		);
 	return (
-		<div className='bg-violet-100 border-r-2 border-r-gray-200 h-full w-full flex flex-col overflow-hidden flex-shrink-0'>
-			{isLoading ? (
-				<div className='flex-grow flex flex-col gap-4 items-center justify-center'>
-					<span className='text-lg text-gray-700'>Loading...</span>
-					<BiLoader />
-				</div>
-			) : (
-				<ChatList chats={chats} />
-			)}
+		<div className='bg-violet-100 border-r-2 border-r-gray-200 h-full w-full flex flex-col overflow-scroll flex-shrink-0'>
+			<div className='max-h-screen overflow-y-scroll'>
+				{isLoading ? (
+					<div className='flex-grow flex flex-col gap-4 items-center justify-center'>
+						<span className='text-lg text-gray-700'>Loading...</span>
+						<BiLoader />
+					</div>
+				) : (
+					<ChatList chats={chats} />
+				)}
+			</div>
 		</div>
 	);
 };

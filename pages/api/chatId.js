@@ -1,9 +1,10 @@
 import {getSession, withApiAuthRequired} from '@auth0/nextjs-auth0';
+import {ObjectId} from 'mongodb';
 import {Configuration, OpenAIApi} from 'openai';
 import clientPromise from '../../lib/mongodb';
 
-const chats = withApiAuthRequired(async (req, res) => {
-	const {content, authId} = req.body;
+const chatId = withApiAuthRequired(async (req, res) => {
+	const {userMsg, authId, chatId} = req.body;
 	const {user} = await getSession(req, res);
 	if (!user) {
 		return res.status(401).json({message: 'Unauthorized'});
@@ -16,13 +17,14 @@ const chats = withApiAuthRequired(async (req, res) => {
 		res.status(403).json({message: 'Unauthorized'});
 		return;
 	}
-	const prompt = `Please generate a related title for the following content and put the title in a new line with following format Title:[title generated goes here] ,then in the new line give me a result of the content : ${content} , and put the result in a new line with following format Result:[result generated goes here] }`;
+	const prompt = `Please generate a related content for the following content ,then in the new line give me a result of the content : ${userMsg} , and put the result in a new line with following format Result:[result generated goes here] }`;
 	const config = new Configuration({
 		apiKey: process.env.OPENAI_API_KEY,
 	});
 	const openai = new OpenAIApi(config);
-	const systemMessages = [];
-	const userMessages = [];
+	const chat = await db.collection('chats').findOne({_id: ObjectId(chatId)});
+	const systemMessages = chat.systemMessages || [];
+	const userMessages = chat.userMessages || [];
 	try {
 		const response = await openai.createCompletion({
 			model: 'text-davinci-003',
@@ -31,29 +33,36 @@ const chats = withApiAuthRequired(async (req, res) => {
 			max_tokens: 2200,
 		});
 		const inputString = response.data.choices[0].text;
-		const titleMatch = inputString.match(/Title:\s*(.*)\s*\n/);
-		const title = titleMatch ? titleMatch[1] : '';
+
 		const textMatch = inputString.match(/Result:\s*(.*)$/);
-		const text = textMatch ? textMatch[1] : '';
+		const systemMsg = textMatch ? textMatch[1] : '';
 		const authIdExtract = authId.split('|');
 		const userAuthId = authIdExtract[1];
-		systemMessages.push(text);
-		userMessages.push(content);
+		systemMessages.push(systemMsg);
+		userMessages.push(userMsg);
 		const responseObj = {
 			userId: userProfile._id,
-			title,
 			systemMessages,
 			userMessages,
 			authId: userAuthId,
 			createdAt: new Date(),
 		};
-		console.log(responseObj);
 		await db.collection('users').updateOne({authId: user.sub}, {$inc: {tokens: -1}});
-		await db.collection('chats').insertOne(responseObj);
+		await db.collection('chats').updateOne(
+			{_id: ObjectId(chatId)},
+			{
+				$push: {
+					systemMessages: systemMsg,
+					userMessages: userMsg,
+				},
+			},
+		);
+
 		res.status(200).json(responseObj);
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({error: 'Something went wrong.'});
 	}
 });
 
-export default chats;
+export default chatId;

@@ -4,15 +4,17 @@ import {ErrorBoundary} from 'react-error-boundary';
 function MyApp({Component, pageProps}) {
 	const getLayout = Component.getLayout || ((page) => page);
 	return (
-		<UserProvider>
-			{getLayout(
-				<ErrorBoundary>
-					{' '}
-					<Component {...pageProps} />
-				</ErrorBoundary>,
-				pageProps,
-			)}
-		</UserProvider>
+		<>
+			<UserProvider>
+				{getLayout(
+					<ErrorBoundary>
+						{' '}
+						<Component {...pageProps} />
+					</ErrorBoundary>,
+					pageProps,
+				)}
+			</UserProvider>
+		</>
 	);
 }
 

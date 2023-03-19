@@ -2,7 +2,7 @@ import {getSession, withApiAuthRequired} from '@auth0/nextjs-auth0';
 import clientPromise from '../../lib/mongodb';
 
 const userProfile = withApiAuthRequired(async (req, res) => {
-	const {user} = await req.body;
+	const {user} = await getSession(req, res);
 	if (!user) {
 		return res.status(401).json({message: 'Unauthorized'});
 	}
