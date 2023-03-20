@@ -28,7 +28,7 @@ const chats = withApiAuthRequired(async (req, res) => {
 			model: 'text-davinci-003',
 			prompt,
 			temperature: 0,
-			max_tokens: 2200,
+			max_tokens: 3600,
 		});
 		const inputString = response.data.choices[0].text;
 		const titleMatch = inputString.match(/Title:\s*(.*)\s*\n/);
@@ -47,7 +47,6 @@ const chats = withApiAuthRequired(async (req, res) => {
 			authId: userAuthId,
 			createdAt: new Date(),
 		};
-		console.log(responseObj);
 		await db.collection('users').updateOne({authId: user.sub}, {$inc: {tokens: -1}});
 		await db.collection('chats').insertOne(responseObj);
 		res.status(200).json(responseObj);

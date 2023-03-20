@@ -1,8 +1,9 @@
 import {v4 as uuidv4} from 'uuid';
+import {useMemo} from 'react';
 
 const ChatMessage = ({systemMessages = [], userMessages = []}) => {
-	const userId = uuidv4();
-	const systemId = uuidv4();
+	const userId = useMemo(() => uuidv4(), []);
+	const systemId = useMemo(() => uuidv4(), []);
 	const messages = [];
 
 	for (let i = 0; i < Math.max(systemMessages.length, userMessages.length); i++) {
@@ -14,7 +15,7 @@ const ChatMessage = ({systemMessages = [], userMessages = []}) => {
 
 	return (
 		<>
-			{messages.map((msg, index) => (
+			{messages.map((msg) => (
 				<div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
 					{msg.type === 'system' && (
 						<div className={`bg-violet-400 text-white ${widthClass} rounded-lg p-2 break-word shadow-md`}>

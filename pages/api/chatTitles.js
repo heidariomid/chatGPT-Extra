@@ -19,6 +19,7 @@ const chatTitles = withApiAuthRequired(async (req, res) => {
 		}
 
 		const chats = await db.collection('chats').find({userId: userProfile._id}).toArray();
+
 		res.status(200).json(chats);
 	} catch (error) {
 		res.status(500).json({error: 'Something went wrong.'});

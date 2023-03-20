@@ -1,30 +1,13 @@
-import axios from 'axios';
-import {useUser} from '@auth0/nextjs-auth0/client';
-import {useRef, useState} from 'react';
 import NewChat from '../pages/chats/NewChat';
 import {Layout} from '../components/Layout/Layout';
-const ChatApp = () => {
-	const {user} = useUser();
-	const inputRef = useRef(null);
-	const [isLoading, setIsLoading] = useState(false);
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		setIsLoading(true);
-		const content = e.target.content.value;
-		try {
-			await axios.post('/api/chats', {content, authId: user.sub});
-			inputRef.current.value = '';
-		} catch (error) {
-			throw new Error(error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
 
+const ChatApp = () => {
 	return (
-		<>
-			<NewChat />
-		</>
+		<div className='flex flex-col min-h-screen'>
+			<div className='flex-1 overflow-hidden'>
+				<NewChat />
+			</div>
+		</div>
 	);
 };
 

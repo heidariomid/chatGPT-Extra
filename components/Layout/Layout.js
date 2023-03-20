@@ -4,21 +4,18 @@ import Header from './Header';
 
 export const Layout = ({children}) => {
 	return (
-		<div className='max-h-full overflow-auto '>
-			{/* Head section */}
+		<div className='min-h-screen overflow-hidden'>
 			<Head>
 				<title>chatGPT Extra</title>
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
-			{/* Header section */}
+
 			<Header />
-			{/* Main content section */}
-			<main className='grid grid-cols-[300px_1fr] max-h-screen overflow-y-auto '>
-				{/* Left sidebar */}
+			<main className='grid grid-cols-[300px_1fr] '>
 				<Sidebar />
 				{children}
 			</main>
-			{/* Footer section */}
+
 			<footer className='bg-violet-300 text-white py-4'>
 				<div className='container mx-auto px-4'>
 					<p className='text-center'>&copy; 2023 chatGPT Extra. All rights reserved.</p>

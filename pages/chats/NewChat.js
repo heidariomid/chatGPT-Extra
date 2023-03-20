@@ -2,12 +2,14 @@ import Link from 'next/link';
 import axios from 'axios';
 import {BiLoader, BiSend} from 'react-icons/bi';
 import {useUser} from '@auth0/nextjs-auth0/client';
-import {useRef, useState} from 'react';
+import {useContext, useRef, useState} from 'react';
 import {Layout} from '../../components/Layout/Layout';
+import {StateContext} from '../../store/StateContext';
 
 const NewChat = () => {
 	const {user} = useUser();
 	const inputRef = useRef(null);
+	const {setChatKey} = useContext(StateContext);
 	const [isLoading, setIsLoading] = useState(false);
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -15,6 +17,7 @@ const NewChat = () => {
 		const content = e.target.content.value;
 		try {
 			await axios.post('/api/chats', {content, authId: user.sub});
+			setChatKey(Math.random());
 			inputRef.current.value = '';
 		} catch (error) {
 			throw new Error(error);
@@ -51,7 +54,7 @@ const NewChat = () => {
 											placeholder='Type a message...'
 										/>
 										<button disabled={isLoading} type='submit' className='rounded-full bg-violet-500 text-white p-2 hover:bg-violet-600 focus:outline-none'>
-											{isLoading ? <BiLoader /> : <BiSend />}
+											{isLoading ? <BiLoader className='animate-spin' /> : <BiSend />}
 										</button>
 									</form>
 								</div>

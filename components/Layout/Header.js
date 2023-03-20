@@ -3,9 +3,22 @@ import Link from 'next/link';
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import logo from '../../public/favicon.png';
+import {useStore} from '../../store/StateContext';
 const Header = () => {
 	const [userProfile, setUserProfile] = useState({});
 	const [isLoading, setIsLoading] = useState(true);
+	const {chatKey, setChatKey} = useStore();
+	const submitTokenHandler = async (e) => {
+		e.preventDefault();
+		try {
+			const response = await axios.post('/api/addToken');
+			if (response.data.success) {
+				setChatKey(Math.random());
+			}
+		} catch (error) {
+			throw new Error(error);
+		}
+	};
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -20,7 +33,7 @@ const Header = () => {
 		};
 
 		fetchData();
-	}, []);
+	}, [chatKey]);
 	return (
 		<>
 			<header className='bg-violet-300 text-white py-4'>
@@ -33,10 +46,10 @@ const Header = () => {
 						{userProfile && !isLoading ? (
 							<ul className='flex items-center gap-x-4'>
 								<li>
-									<Link href='/token' className='block px-4 py-2 bg-violet-500  hover:text-gray-300'>
+									<button onClick={submitTokenHandler} className='block px-4 py-2 bg-violet-500  hover:text-gray-300'>
 										{/* add remaining token with icon */}
 										Token :<span> {userProfile?.tokens}</span>
-									</Link>
+									</button>
 								</li>
 								<li>
 									<Link href='/api/auth/logout' className='block px-4 py-2  hover:text-gray-300 bg-violet-600'>
