@@ -48,7 +48,7 @@ const Chat = () => {
 		<div className=' w-full flex flex-col min-h-screen overflow-hidden flex-shrink-0'>
 			<div className='flex flex-col h-full max-h-full'>
 				<div className='overflow-y-auto flex-grow px-4 pt-4 pb-20'>
-					<ChatMessage key={chat?.id} userMessages={chat?.userMessages} systemMessages={chat?.systemMessages} />
+					<ChatMessage key={chat?.id} messages={chat?.messages} />
 				</div>
 
 				<div className='w-full'>

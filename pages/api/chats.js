@@ -17,41 +17,47 @@ const chats = withApiAuthRequired(async (req, res) => {
 		return;
 	}
 	const prompt = `Please generate a related title for the following content and put the title in a new line with following format Title:[title generated goes here] ,then in the new line give me a result of the content : ${content} , and put the result in a new line with following format Result:[result generated goes here] }`;
+
 	const config = new Configuration({
 		apiKey: process.env.OPENAI_API_KEY,
 	});
 	const openai = new OpenAIApi(config);
-	const systemMessages = [];
-	const userMessages = [];
+	const messages = [];
+
 	try {
 		const response = await openai.createCompletion({
 			model: 'text-davinci-003',
 			prompt,
-			temperature: 0,
-			max_tokens: 3600,
+			temperature: 0.7,
+			max_tokens: 1000,
+			top_p: 1.0,
+			frequency_penalty: 0.0,
+			presence_penalty: 0.0,
 		});
+
 		const inputString = response.data.choices[0].text;
 		const titleMatch = inputString.match(/Title:\s*(.*)\s*\n/);
 		const title = titleMatch ? titleMatch[1] : '';
-		const textMatch = inputString.match(/Result:\s*(.*)$/);
+		const textMatch = inputString.match(/^Result:\s*(.*)$/m);
 		const text = textMatch ? textMatch[1] : '';
 		const authIdExtract = authId.split('|');
 		const userAuthId = authIdExtract[1];
-		systemMessages.push(text);
-		userMessages.push(content);
+
+		messages.push({role: 'system', content: text}, {role: 'user', content});
+
 		const responseObj = {
 			userId: userProfile._id,
 			title,
-			systemMessages,
-			userMessages,
+			messages,
 			authId: userAuthId,
 			createdAt: new Date(),
 		};
+
 		await db.collection('users').updateOne({authId: user.sub}, {$inc: {tokens: -1}});
 		await db.collection('chats').insertOne(responseObj);
 		res.status(200).json(responseObj);
 	} catch (error) {
-		res.status(500).json({error: 'Something went wrong.'});
+		res.status(500).json({error: 'Something went wrong !!!'});
 	}
 });
 
