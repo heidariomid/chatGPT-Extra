@@ -17,7 +17,7 @@ const chatId = withApiAuthRequired(async (req, res) => {
 		res.status(403).json({message: 'Unauthorized'});
 		return;
 	}
-	const prompt = `Please generate a related content for the following content ,then in the new line give me a result of the content : ${userMsg} , and put the result in a new line with following format Result:[result generated goes here] }`;
+	const prompt = ` ${userMsg}, please response with following format Result:[result generated goes here] }`;
 	const config = new Configuration({
 		apiKey: process.env.OPENAI_API_KEY,
 	});
@@ -33,9 +33,9 @@ const chatId = withApiAuthRequired(async (req, res) => {
 			max_tokens: 2200,
 		});
 		const inputString = response.data.choices[0].text;
-
 		const textMatch = inputString.match(/Result:\s*(.*)$/);
 		const systemMsg = textMatch ? textMatch[1] : '';
+
 		const authIdExtract = authId.split('|');
 		const userAuthId = authIdExtract[1];
 		systemMessages.push(systemMsg);
@@ -47,6 +47,7 @@ const chatId = withApiAuthRequired(async (req, res) => {
 			authId: userAuthId,
 			createdAt: new Date(),
 		};
+
 		await db.collection('users').updateOne({authId: user.sub}, {$inc: {tokens: -1}});
 		await db.collection('chats').updateOne(
 			{_id: ObjectId(chatId)},

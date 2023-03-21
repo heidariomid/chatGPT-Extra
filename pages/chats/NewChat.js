@@ -5,10 +5,12 @@ import {useUser} from '@auth0/nextjs-auth0/client';
 import {useContext, useRef, useState} from 'react';
 import {Layout} from '../../components/Layout/Layout';
 import {StateContext} from '../../store/StateContext';
+import {useRouter} from 'next/router';
 
 const NewChat = () => {
 	const {user} = useUser();
 	const inputRef = useRef(null);
+	const router = useRouter();
 	const {setChatKey} = useContext(StateContext);
 	const [isLoading, setIsLoading] = useState(false);
 	const handleSubmit = async (e) => {
@@ -16,9 +18,13 @@ const NewChat = () => {
 		setIsLoading(true);
 		const content = e.target.content.value;
 		try {
-			await axios.post('/api/chats', {content, authId: user.sub});
+			const response = await axios.post('/api/chats', {content, authId: user.sub});
 			setChatKey(Math.random());
 			inputRef.current.value = '';
+
+			if (response.data) {
+				router.push(`/chats/${response.data?._id}`);
+			}
 		} catch (error) {
 			throw new Error(error);
 		} finally {
